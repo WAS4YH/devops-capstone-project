@@ -86,6 +86,7 @@ def read_account(id):
 def update_accounts(id):
     """Update an Account with a put request and id"""
     app.logger.info("Request to update an Account with id: %s", id)
+    check_content_type("application/json")
 
     account = Account.find(id)
     if not account:
@@ -100,8 +101,17 @@ def update_accounts(id):
 # DELETE AN ACCOUNT
 ######################################################################
 
-# ... place you code here to DELETE an account ...
+@app.route("/accounts/<id>", methods=["DELETE"])
+def delete_accounts(id):
+    """Delete an Account with a delete request and id"""
+    app.logger.info("Request to delete an Account with id: %s", id)
 
+    account = Account.find(id)
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{id}] could not be found.")
+        
+    account.delete()
+    return "", status.HTTP_204_NO_CONTENT
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
