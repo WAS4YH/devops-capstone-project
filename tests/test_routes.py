@@ -127,10 +127,7 @@ class TestAccountService(TestCase):
     def test_read_an_account(self):
         """It should read an Account"""
         account = self._create_accounts(1)[0]
-        response = self.client.get(
-            f"{BASE_URL}/{account.id}",
-            content_type="application/json"
-        )
+        response = self.client.get(f"{BASE_URL}/{account.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         new_account = response.get_json()
@@ -143,17 +140,18 @@ class TestAccountService(TestCase):
 
     def test_read_account_not_found(self):
         """It should report an error when reading a non existing account"""
-        response = self.client.get(
-            f"{BASE_URL}/0",
-            content_type="application/json"
-        )
+        response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_account(self):
         """It should Update an existing Account"""
         account = self._create_accounts(1)[0]
         account.name = "New Name"
-        resp = self.client.put(f"{BASE_URL}/{account.id}", json=account.serialize())
+        resp = self.client.put(
+            f"{BASE_URL}/{account.id}", 
+            json=account.serialize(), 
+            content_type="application/json"
+            )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_account = resp.get_json()
         self.assertEqual(updated_account["name"], "New Name")
@@ -164,4 +162,15 @@ class TestAccountService(TestCase):
             f"{BASE_URL}/0",
             content_type="application/json"
         )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_account(self):
+        """It should Delete an Account"""
+        account = self._create_accounts(1)[0]
+        resp = self.client.delete(f"{BASE_URL}/{account.id}")
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delet_account_not_found(self):
+        """It should report an error when deleting a non existing account"""
+        response = self.client.delete(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
