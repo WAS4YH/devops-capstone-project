@@ -12,6 +12,7 @@ from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
+from unittest.mock import patch
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -174,3 +175,25 @@ class TestAccountService(TestCase):
         """It should report an error when deleting a non existing account"""
         response = self.client.delete(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_account_list(self):
+        """It should Get a list of Accounts"""
+        self._create_accounts(5)
+        resp = self.client.get(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data),5)
+
+    def test_delete_on_base_not_allowed(self):
+        """It should return not allowed when trying to delete the base url"""
+        resp = self.client.delete(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+
+    def test_500_error_handler(self):
+        """It should return a server error, when an exceptino in the server is raised"""
+        app.config["TESTING"] = False
+        with patch("service.routes.Account.all", side_effect=Exception("Trigger 500")):
+            resp = self.client.get(BASE_URL)
+            self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        app.config["TESTING"] = True
