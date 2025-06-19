@@ -119,7 +119,7 @@ def delete_accounts(id):
     account = Account.find(id)
     if not account:
         abort(status.HTTP_404_NOT_FOUND, f"Account with id [{id}] could not be found.")
-        
+
     account.delete()
     return "", status.HTTP_204_NO_CONTENT
 
@@ -138,4 +138,3 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
-    
