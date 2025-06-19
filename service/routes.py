@@ -5,7 +5,7 @@ This microservice handles the lifecycle of Accounts
 """
 # pylint: disable=unused-import
 from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
-from service.models import Account, PersistentBase
+from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
 
@@ -61,6 +61,7 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
+
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
     """List all Accounts with a GET message"""
@@ -74,10 +75,11 @@ def list_accounts():
 # READ AN ACCOUNT
 ######################################################################
 
+
 @app.route("/accounts/<id>", methods=["GET"])
 def read_account(id):
     """Read an account with a GET message with id"""
-    app.logger.info("Request to read Account with id %s",id)
+    app.logger.info("Request to read Account with id %s", id)
     account = Account.find(id)
     if not account:
         return "", status.HTTP_404_NOT_FOUND
@@ -87,6 +89,7 @@ def read_account(id):
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
+
 
 @app.route("/accounts/<id>", methods=["PUT"])
 def update_accounts(id):
@@ -106,6 +109,7 @@ def update_accounts(id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
+
 
 @app.route("/accounts/<id>", methods=["DELETE"])
 def delete_accounts(id):
@@ -134,3 +138,4 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
+    
