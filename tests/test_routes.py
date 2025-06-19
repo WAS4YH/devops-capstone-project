@@ -141,7 +141,6 @@ class TestAccountService(TestCase):
         self.assertEqual(new_account["phone_number"], account.phone_number)
         self.assertEqual(new_account["date_joined"], str(account.date_joined))
 
-
     def test_read_account_not_found(self):
         """It should report an error when reading a non existing account"""
         response = self.client.get(f"{BASE_URL}/0")
@@ -152,8 +151,8 @@ class TestAccountService(TestCase):
         account = self._create_accounts(1)[0]
         account.name = "New Name"
         resp = self.client.put(
-            f"{BASE_URL}/{account.id}", 
-            json=account.serialize(), 
+            f"{BASE_URL}/{account.id}",
+            json=account.serialize(),
             content_type="application/json"
             )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -185,13 +184,12 @@ class TestAccountService(TestCase):
         resp = self.client.get(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(len(data),5)
+        self.assertEqual(len(data), 5)
 
     def test_delete_on_base_not_allowed(self):
         """It should return not allowed when trying to delete the base url"""
         resp = self.client.delete(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-    
 
     def test_500_error_handler(self):
         """It should return a server error, when an exceptino in the server is raised"""
@@ -210,9 +208,9 @@ class TestAccountService(TestCase):
         self.assertEqual(headers.get('X-Content-Type-Options'), 'nosniff')
         self.assertEqual(headers.get('Content-Security-Policy'), 'default-src \'self\'; object-src \'none\'')
         self.assertEqual(headers.get('Referrer-Policy'), 'strict-origin-when-cross-origin')
-    
+
     def test_cors(self):
         """It should return CORS when calling the root"""
         resp = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
         headers = resp.headers
-        self.assertEqual(headers.get('Access-Control-Allow-Origin'),'*')
+        self.assertEqual(headers.get('Access-Control-Allow-Origin'), '*')
